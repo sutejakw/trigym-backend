@@ -1,9 +1,15 @@
 import { Hono } from 'hono'
+import { secureHeaders } from 'hono/secure-headers'
+import { cors } from 'hono/cors'
 import authRoute from './routes/auth'
 import { db } from './db'
 import { authMiddleware } from './middleware/auth'
+import { csrf } from 'hono/csrf'
 
 const apiApp = new Hono()
+apiApp.use(secureHeaders())
+apiApp.use('/api/*', cors())
+apiApp.use(csrf())
 
 apiApp.use('*', async (c, next) => {
   c.set('db', db)
