@@ -9,15 +9,19 @@
     "open-auth-docs": "open-cli http://localhost:3000/api/auth/reference"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "drizzle-kit": "^0.31.5",
     "drizzle-orm": "^0.44.5",
     "eslint": "^9.36.0",
     "hono": "^4.9.2",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@types/bcryptjs": "^3.0.0",
     "@types/bun": "latest",
+    "@types/pg": "^8.15.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "jiti": "^2.6.0",

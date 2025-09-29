@@ -1,3 +1,10 @@
+export const refresh_tokens = pgTable('refresh_tokens', {
+  id: serial('id').primaryKey(),
+  user_id: integer('user_id').references(() => users.id),
+  token: varchar('token', { length: 255 }).notNull(),
+  expires_at: timestamp('expires_at').notNull(),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+})
 import {
   pgTable,
   serial,
@@ -12,14 +19,14 @@ import {
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 255 }),
-  email: varchar('email', { length: 255 }).unique(),
-  password_hash: varchar('password_hash', { length: 255 }),
+  email: varchar('email', { length: 255 }).unique().notNull(),
+  password_hash: varchar('password_hash', { length: 255 }).notNull(),
   phone: varchar('phone', { length: 255 }),
   gender: varchar('gender', { length: 255 }),
   date_of_birth: date('date_of_birth'),
-  role: varchar('role', { length: 255 }),
-  created_at: timestamp('created_at'),
-  updated_at: timestamp('updated_at'),
+  role: varchar('role', { length: 255 }).default('user'),
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  updated_at: timestamp('updated_at').defaultNow().notNull(),
 })
 
 export const memberships = pgTable('memberships', {
