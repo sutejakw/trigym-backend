@@ -1,0 +1,93 @@
+Table users {
+  id int [pk, increment]
+  name varchar
+  email varchar [unique]
+  password_hash varchar
+  phone varchar
+  gender varchar
+  date_of_birth date
+  role varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table memberships {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  membership_type varchar
+  start_date date
+  end_date date
+  status varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table trainers {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  bio text
+  specialization varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table payments {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  membership_id int [ref: > memberships.id, null]
+  amount decimal
+  payment_date datetime
+  payment_method varchar
+  status varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table supplements {
+  id int [pk, increment]
+  name varchar
+  description text
+  price decimal
+  stock int
+  created_at datetime
+  updated_at datetime
+}
+
+Table supplement_orders {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  order_date datetime
+  total_amount decimal
+  status varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table supplement_order_items {
+  id int [pk, increment]
+  order_id int [ref: > supplement_orders.id]
+  supplement_id int [ref: > supplements.id]
+  quantity int
+  price decimal
+  subtotal decimal
+}
+
+Table supplement_stock_histories {
+  id int [pk, increment]
+  supplement_id int [ref: > supplements.id]
+  change_type varchar
+  quantity_change int
+  description text
+  created_at datetime
+}
+
+Table journals {
+  id int [pk, increment]
+  user_id int [ref: > users.id, null]
+  reference_type varchar // contoh: 'payment', 'supplement_order', 'stock_adjustment'
+  reference_id int // id dari tabel terkait
+  description text
+  amount decimal
+  type varchar // 'debit' atau 'credit'
+  created_at datetime
+}
