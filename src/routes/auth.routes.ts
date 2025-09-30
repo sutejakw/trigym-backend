@@ -1,23 +1,18 @@
-import { eq } from 'drizzle-orm'
-import { users, refresh_tokens } from '@/db/schema'
-import { generateJWT } from '@/utils/jwt'
-import { loginSchema, refreshTokenSchema } from '@/validations/authSchema'
-import * as crypto from 'crypto'
-import { Context } from 'hono'
-
-import { parseAndValidate } from '@/utils/validation'
+import { Hono } from 'hono'
+import { loginValidator, refreshTokenValidator } from '@/validations/authSchema'
+import { refresh_tokens, users } from '@/db/schema'
 import { db } from '@/db/db'
+import { eq } from 'drizzle-orm'
+import { generateJWT } from '@/utils/jwt'
+import * as crypto from 'crypto'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bcrypt = require('bcryptjs')
 
-export async function loginService(c: Context) {
-  const { data, error, status } = await parseAndValidate(c, loginSchema)
-  if (error)
-    return new Response(JSON.stringify(error), {
-      status,
-      headers: { 'Content-Type': 'application/json' },
-    })
-  const { email, password } = data
+const app = new Hono()
+
+app.post('/login', loginValidator, async (c) => {
+  const body = await c.req.json()
+  const { email, password } = body
 
   const user = await db
     .select()
@@ -39,8 +34,12 @@ export async function loginService(c: Context) {
     role: user.role,
   })
 
+  // Delete existing refresh tokens for this user (one token per user strategy)
+  await db.delete(refresh_tokens).where(eq(refresh_tokens.user_id, user.id))
+
+  // Create new refresh token
   const refreshToken = crypto.randomBytes(32).toString('hex')
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 days
   await db.insert(refresh_tokens).values({
     user_id: user.id,
     token: refreshToken,
@@ -57,16 +56,11 @@ export async function loginService(c: Context) {
       role: user.role,
     },
   })
-}
+})
 
-export async function refreshService(c: Context) {
-  const { data, error, status } = await parseAndValidate(c, refreshTokenSchema)
-  if (error)
-    return new Response(JSON.stringify(error), {
-      status,
-      headers: { 'Content-Type': 'application/json' },
-    })
-  const { refreshToken } = data
+app.post('/refresh-token', refreshTokenValidator, async (c) => {
+  const body = await c.req.json()
+  const { refreshToken } = body
 
   type TokenRow = {
     id: number
@@ -116,18 +110,15 @@ export async function refreshService(c: Context) {
       role: user.role,
     },
   })
-}
+})
 
-export async function logoutService(c: Context) {
-  const { data, error, status } = await parseAndValidate(c, refreshTokenSchema)
-  if (error)
-    return new Response(JSON.stringify(error), {
-      status,
-      headers: { 'Content-Type': 'application/json' },
-    })
-  const { refreshToken } = data
+app.post('/logout', refreshTokenValidator, async (c) => {
+  const body = await c.req.json()
+  const { refreshToken } = body
 
   await db.delete(refresh_tokens).where(eq(refresh_tokens.token, refreshToken))
 
   return c.json({ success: true })
-}
+})
+
+export default app

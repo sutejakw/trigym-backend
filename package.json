@@ -9,6 +9,7 @@
     "open-auth-docs": "open-cli http://localhost:3000/api/auth/reference"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.3",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.3",
     "drizzle-kit": "^0.31.5",
