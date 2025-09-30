@@ -19,13 +19,25 @@ Table refresh_tokens {
   created_at datetime
 }
 
+Table membership_plans {
+  id int [pk, increment]
+  name varchar
+  description text
+  price decimal
+  duration_months int
+  features text
+  is_active boolean
+  created_at datetime
+  updated_at datetime
+}
+
 Table memberships {
   id int [pk, increment]
   user_id int [ref: > users.id]
-  membership_type varchar
+  membership_plan_id int [ref: > membership_plans.id]
   start_date date
   end_date date
-  status varchar
+  status varchar // 'active', 'expired', 'cancelled', 'pending'
   created_at datetime
   updated_at datetime
 }
@@ -35,6 +47,45 @@ Table trainers {
   user_id int [ref: > users.id]
   bio text
   specialization varchar
+  hourly_rate decimal
+  is_active boolean
+  created_at datetime
+  updated_at datetime
+}
+
+Table gym_classes {
+  id int [pk, increment]
+  name varchar
+  description text
+  category varchar // 'cardio', 'strength', 'yoga', 'zumba', etc.
+  max_capacity int
+  duration_minutes int
+  price decimal
+  is_active boolean
+  created_at datetime
+  updated_at datetime
+}
+
+Table class_schedules {
+  id int [pk, increment]
+  gym_class_id int [ref: > gym_classes.id]
+  trainer_id int [ref: > trainers.id]
+  date date
+  start_time time
+  end_time time
+  available_spots int
+  status varchar // 'scheduled', 'cancelled', 'completed'
+  created_at datetime
+  updated_at datetime
+}
+
+Table class_bookings {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  class_schedule_id int [ref: > class_schedules.id]
+  booking_date datetime
+  status varchar // 'booked', 'attended', 'no_show', 'cancelled'
+  payment_status varchar // 'paid', 'pending', 'free'
   created_at datetime
   updated_at datetime
 }
@@ -42,21 +93,68 @@ Table trainers {
 Table payments {
   id int [pk, increment]
   user_id int [ref: > users.id]
-  membership_id int [ref: > memberships.id, null]
+  reference_type varchar // 'membership', 'class_booking', 'supplement_order', 'personal_training'
+  reference_id int // id dari tabel terkait
   amount decimal
   payment_date datetime
-  payment_method varchar
-  status varchar
+  payment_method varchar // 'cash', 'card', 'bank_transfer', 'digital_wallet'
+  status varchar // 'pending', 'completed', 'failed', 'refunded'
+  transaction_id varchar
+  notes text
+  created_at datetime
+  updated_at datetime
+}
+
+Table equipment {
+  id int [pk, increment]
+  name varchar
+  category varchar // 'cardio', 'strength', 'free_weights', etc.
+  brand varchar
+  model varchar
+  purchase_date date
+  warranty_end_date date
+  status varchar // 'active', 'maintenance', 'broken', 'retired'
+  location varchar
+  notes text
+  created_at datetime
+  updated_at datetime
+}
+
+Table equipment_maintenance {
+  id int [pk, increment]
+  equipment_id int [ref: > equipment.id]
+  maintenance_type varchar // 'routine', 'repair', 'inspection'
+  description text
+  performed_by varchar
+  maintenance_date date
+  cost decimal
+  next_maintenance_date date
+  created_at datetime
+}
+
+Table supplement_categories {
+  id int [pk, increment]
+  name varchar
+  description text
+  is_active boolean
   created_at datetime
   updated_at datetime
 }
 
 Table supplements {
   id int [pk, increment]
+  category_id int [ref: > supplement_categories.id]
   name varchar
   description text
   price decimal
+  cost_price decimal
   stock int
+  min_stock_level int
+  brand varchar
+  ingredients text
+  usage_instructions text
+  expiry_date date
+  is_active boolean
   created_at datetime
   updated_at datetime
 }
@@ -86,6 +184,39 @@ Table supplement_stock_histories {
   change_type varchar
   quantity_change int
   description text
+  created_at datetime
+}
+
+Table personal_training_sessions {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  trainer_id int [ref: > trainers.id]
+  session_date datetime
+  duration_minutes int
+  price decimal
+  status varchar // 'scheduled', 'completed', 'cancelled', 'no_show'
+  notes text
+  created_at datetime
+  updated_at datetime
+}
+
+Table gym_check_ins {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  check_in_time datetime
+  check_out_time datetime
+  created_at datetime
+}
+
+Table notifications {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  title varchar
+  message text
+  type varchar // 'membership_expiry', 'class_reminder', 'payment_due', 'general'
+  is_read boolean
+  scheduled_at datetime
+  sent_at datetime
   created_at datetime
 }
 

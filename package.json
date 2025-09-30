@@ -12,7 +12,7 @@
     "@hono/zod-validator": "^0.7.3",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.3",
-    "drizzle-kit": "^0.31.5",
+    "drizzle-kit": "^0.30.5",
     "drizzle-orm": "^0.44.5",
     "eslint": "^9.36.0",
     "hono": "^4.9.2",
