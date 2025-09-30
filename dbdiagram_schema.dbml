@@ -11,6 +11,14 @@ Table users {
   updated_at datetime
 }
 
+Table refresh_tokens {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  token varchar
+  expires_at datetime
+  created_at datetime
+}
+
 Table memberships {
   id int [pk, increment]
   user_id int [ref: > users.id]
