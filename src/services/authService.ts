@@ -1,12 +1,12 @@
 import { eq } from 'drizzle-orm'
-import { users, refresh_tokens } from '@/../drizzle/schema'
+import { users, refresh_tokens } from '@/db/schema'
 import { generateJWT } from '@/utils/jwt'
-import { db } from '@/db'
 import { loginSchema, refreshTokenSchema } from '@/validations/authSchema'
 import * as crypto from 'crypto'
 import { Context } from 'hono'
 
 import { parseAndValidate } from '@/utils/validation'
+import { db } from '@/db/db'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bcrypt = require('bcryptjs')
 

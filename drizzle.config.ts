@@ -1,15 +1,15 @@
-import type { Config } from 'drizzle-kit'
+import * as dotenv from 'dotenv'
+dotenv.config() // PASTIKAN INI ADA DI PALING ATAS!
+import { defineConfig } from 'drizzle-kit'
 
-export default {
-  schema: './drizzle/schema.ts',
-  out: './drizzle/migrations',
+console.log('Loaded DB URL:', process.env.DATABASE_URL) // cek log
+
+export default defineConfig({
+  schema: './src/db/schema.ts',
+  out: './src/db/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    host: 'localhost',
-    port: 5433,
-    user: 'user',
-    password: 'password',
-    database: 'trigym',
-    ssl: false,
+    url: process.env.DATABASE_URL!,
   },
-} satisfies Config
+  casing: 'snake_case',
+})

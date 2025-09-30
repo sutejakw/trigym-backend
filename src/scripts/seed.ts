@@ -1,5 +1,5 @@
-import { db } from '@/db'
-import { users } from '@/../drizzle/schema'
+import { db } from '@/db/db'
+import { users } from '@/db/schema'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bcrypt = require('bcryptjs')
 
