@@ -5,11 +5,22 @@ import authRoute from './routes/auth'
 import { db } from './db'
 import { authMiddleware } from './middleware/auth'
 import { csrf } from 'hono/csrf'
+import { logger } from 'hono/logger'
+import { logger as appLogger } from './utils/logger'
 
 const apiApp = new Hono()
 apiApp.use(secureHeaders())
 apiApp.use('/api/*', cors())
 apiApp.use(csrf())
+
+apiApp.use(logger())
+
+// Error logging middleware
+apiApp.onError((err, c) => {
+  appLogger.error({ err }, '[ERROR]')
+  if (err instanceof Response) return err
+  return c.json({ error: 'Internal Server Error' }, 500)
+})
 
 apiApp.use('*', async (c, next) => {
   c.set('db', db)
