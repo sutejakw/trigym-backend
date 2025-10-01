@@ -4,7 +4,6 @@ import { cors } from 'hono/cors'
 import authRoute from './routes/auth.routes'
 import membershipPlanRoute from './routes/membershipPlan.routes'
 import { authMiddleware } from './middleware/auth'
-import { csrf } from 'hono/csrf'
 import { logger } from 'hono/logger'
 import { logger as appLogger } from './utils/logger'
 
@@ -12,7 +11,6 @@ const app = new Hono()
 app
   .use(secureHeaders())
   .use('/api/*', cors())
-  .use(csrf())
   .use(logger())
   .route('api/auth', authRoute)
   .route('api/membership-plans', membershipPlanRoute)
