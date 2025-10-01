@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { secureHeaders } from 'hono/secure-headers'
 import { cors } from 'hono/cors'
 import authRoute from './routes/auth.routes'
+import membershipPlanRoute from './routes/membershipPlan.routes'
 import { authMiddleware } from './middleware/auth'
 import { csrf } from 'hono/csrf'
 import { logger } from 'hono/logger'
@@ -14,6 +15,7 @@ app
   .use(csrf())
   .use(logger())
   .route('api/auth', authRoute)
+  .route('api/membership-plans', membershipPlanRoute)
   .get('/me', authMiddleware, (c) => {
     const user = c.get('jwtPayload')
     return c.json({ user })
