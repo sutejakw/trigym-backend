@@ -9,6 +9,7 @@ import { membership_plans } from '@/db/schema'
 import { db } from '@/db/db'
 import { eq, ilike, and, count, asc, desc, or, sql } from 'drizzle-orm'
 import { authMiddleware } from '@/middleware/auth'
+import { respondError, respondSuccess } from '@/utils/response'
 
 const app = new Hono()
 app.use(authMiddleware)
@@ -93,9 +94,8 @@ app.get('/datatable', datatableQueryValidator, async (c) => {
 
     const totalPages = Math.ceil(total / limitNum)
 
-    return c.json({
-      success: true,
-      data: plans,
+    return respondSuccess(c, {
+      items: plans,
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -112,7 +112,18 @@ app.get('/datatable', datatableQueryValidator, async (c) => {
       },
     })
   } catch (error) {
-    return c.json({ error: 'Failed to fetch membership plans' }, 500)
+    return respondError(c, 500, 'Failed to fetch membership plans')
+  }
+})
+
+// GET /membership-plans - Get all membership plans
+app.get('/', async (c) => {
+  try {
+    const plans = await db.select().from(membership_plans)
+
+    return respondSuccess(c, plans)
+  } catch (error) {
+    return respondError(c, 500, 'Failed to fetch membership plans')
   }
 })
 
@@ -128,15 +139,12 @@ app.get('/:id', membershipPlanIdValidator, async (c) => {
       .then((r) => r[0])
 
     if (!plan) {
-      return c.json({ error: 'Membership plan not found' }, 404)
+      return respondError(c, 404, 'Membership plan not found')
     }
 
-    return c.json({
-      success: true,
-      data: plan,
-    })
+    return respondSuccess(c, plan)
   } catch (error) {
-    return c.json({ error: 'Failed to fetch membership plan' }, 500)
+    return respondError(c, 500, 'Failed to fetch membership plan')
   }
 })
 
@@ -160,16 +168,16 @@ app.post('/', createMembershipPlanValidator, async (c) => {
       .returning()
       .then((r) => r[0])
 
-    return c.json(
+    return respondSuccess(
+      c,
+      newPlan,
       {
-        success: true,
-        data: newPlan,
         message: 'Membership plan created successfully',
       },
       201
     )
   } catch (error) {
-    return c.json({ error: 'Failed to create membership plan' }, 500)
+    return respondError(c, 500, 'Failed to create membership plan')
   }
 })
 
@@ -187,7 +195,7 @@ app.put('/:id', membershipPlanIdValidator, updateMembershipPlanValidator, async 
       .then((r) => r[0])
 
     if (!existingPlan) {
-      return c.json({ error: 'Membership plan not found' }, 404)
+      return respondError(c, 404, 'Membership plan not found')
     }
 
     const updatedPlan = await db
@@ -200,13 +208,11 @@ app.put('/:id', membershipPlanIdValidator, updateMembershipPlanValidator, async 
       .returning()
       .then((r) => r[0])
 
-    return c.json({
-      success: true,
-      data: updatedPlan,
+    return respondSuccess(c, updatedPlan, {
       message: 'Membership plan updated successfully',
     })
   } catch (error) {
-    return c.json({ error: 'Failed to update membership plan' }, 500)
+    return respondError(c, 500, 'Failed to update membership plan')
   }
 })
 
@@ -223,17 +229,16 @@ app.delete('/:id', membershipPlanIdValidator, async (c) => {
       .then((r) => r[0])
 
     if (!existingPlan) {
-      return c.json({ error: 'Membership plan not found' }, 404)
+      return respondError(c, 404, 'Membership plan not found')
     }
 
     await db.delete(membership_plans).where(eq(membership_plans.id, parseInt(id)))
 
-    return c.json({
-      success: true,
+    return respondSuccess(c, null, {
       message: 'Membership plan deleted successfully',
     })
   } catch (error) {
-    return c.json({ error: 'Failed to delete membership plan' }, 500)
+    return respondError(c, 500, 'Failed to delete membership plan')
   }
 })
 

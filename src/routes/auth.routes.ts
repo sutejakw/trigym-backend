@@ -4,6 +4,7 @@ import { refresh_tokens, users } from '@/db/schema'
 import { db } from '@/db/db'
 import { eq } from 'drizzle-orm'
 import { generateJWT } from '@/utils/jwt'
+import { respondError, respondSuccess } from '@/utils/response'
 import * as crypto from 'crypto'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bcrypt = require('bcryptjs')
@@ -20,12 +21,12 @@ app.post('/login', loginValidator, async (c) => {
     .where(eq(users.email, email))
     .then((r) => r[0])
   if (!user) {
-    return c.json({ error: 'Invalid email or password' }, 401)
+    return respondError(c, 401, 'Invalid email or password')
   }
 
   const valid = await bcrypt.compare(password, user.password_hash)
   if (!valid) {
-    return c.json({ error: 'Invalid email or password' }, 401)
+    return respondError(c, 401, 'Invalid email or password')
   }
 
   const token = await generateJWT({
@@ -46,7 +47,7 @@ app.post('/login', loginValidator, async (c) => {
     expires_at: expiresAt,
   })
 
-  return c.json({
+  return respondSuccess(c, {
     token,
     refreshToken,
     user: {
@@ -75,7 +76,7 @@ app.post('/refresh-token', refreshTokenValidator, async (c) => {
     .where(eq(refresh_tokens.token, refreshToken))
     .then((r) => r[0])
   if (!tokenRow || tokenRow.expires_at < new Date() || !tokenRow.user_id) {
-    return c.json({ error: 'Refresh token invalid or expired' }, 401)
+    return respondError(c, 401, 'Refresh token invalid or expired')
   }
 
   const user = await db
@@ -84,7 +85,7 @@ app.post('/refresh-token', refreshTokenValidator, async (c) => {
     .where(eq(users.id, tokenRow.user_id as number))
     .then((r) => r[0])
   if (!user) {
-    return c.json({ error: 'User not found' }, 404)
+    return respondError(c, 404, 'User not found')
   }
 
   const token = await generateJWT({
@@ -100,7 +101,7 @@ app.post('/refresh-token', refreshTokenValidator, async (c) => {
     .set({ token: newRefreshToken, expires_at: newExpiresAt })
     .where(eq(refresh_tokens.id, tokenRow.id))
 
-  return c.json({
+  return respondSuccess(c, {
     token,
     refreshToken: newRefreshToken,
     user: {
@@ -118,7 +119,7 @@ app.post('/logout', refreshTokenValidator, async (c) => {
 
   await db.delete(refresh_tokens).where(eq(refresh_tokens.token, refreshToken))
 
-  return c.json({ success: true })
+  return respondSuccess(c, null, { message: 'Logged out successfully' })
 })
 
 export default app
