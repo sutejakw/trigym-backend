@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1759133927245,
-      "tag": "0000_watery_triton",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1759151341356,
-      "tag": "0001_left_emma_frost",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1759222177426,
-      "tag": "0002_steady_richard_fisk",
+      "when": 1759274325882,
+      "tag": "0000_tidy_gideon",
       "breakpoints": true
     }
   ]
