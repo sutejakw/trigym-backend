@@ -3,7 +3,7 @@ import { loginValidator, refreshTokenValidator } from '@/validations/authSchema'
 import { refresh_tokens, users } from '@/db/schema'
 import { db } from '@/db/db'
 import { eq } from 'drizzle-orm'
-import { generateJWT } from '@/utils/jwt'
+import { generateJWT, verifyJWT } from '@/utils/jwt'
 import { respondError, respondSuccess } from '@/utils/response'
 import * as crypto from 'crypto'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -120,6 +120,54 @@ app.post('/logout', refreshTokenValidator, async (c) => {
   await db.delete(refresh_tokens).where(eq(refresh_tokens.token, refreshToken))
 
   return respondSuccess(c, null, { message: 'Logged out successfully' })
+})
+
+app.get('/verify', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization')
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return respondError(c, 401, 'No token provided')
+    }
+
+    const token = authHeader.substring(7) // Remove 'Bearer ' prefix
+
+    const payload = await verifyJWT(token)
+
+    console.log(payload)
+
+    if (!payload) {
+      return respondError(c, 401, 'Invalid token')
+    }
+
+    // Optional: Check if user still exists in database
+    const user = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        role: users.role,
+      })
+      .from(users)
+      .where(eq(users.id, payload.id))
+      .then((r) => r[0])
+
+    if (!user) {
+      return respondError(c, 401, 'User not found')
+    }
+
+    return respondSuccess(c, {
+      valid: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    })
+  } catch (error) {
+    return respondError(c, 401, 'Token verification failed')
+  }
 })
 
 export default app
