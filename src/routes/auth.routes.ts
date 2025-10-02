@@ -149,7 +149,7 @@ app.get('/verify', async (c) => {
         role: users.role,
       })
       .from(users)
-      .where(eq(users.id, payload.id))
+      .where(eq(users.id, payload.id as number))
       .then((r) => r[0])
 
     if (!user) {
