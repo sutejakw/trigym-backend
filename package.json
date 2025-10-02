@@ -6,7 +6,10 @@
     "db:generate:migration": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "open-auth-docs": "open-cli http://localhost:3000/api/auth/reference"
+    "open-auth-docs": "open-cli http://localhost:3000/api/auth/reference",
+    "db:seed:base": "bun run src/scripts/seed.ts",
+    "db:seed:memberships": "bun run src/scripts/seedMemberships.ts",
+    "db:seed:all": "bun run src/scripts/seedAll.ts"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.3",

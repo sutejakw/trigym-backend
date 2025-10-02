@@ -20,16 +20,16 @@ export const users = pgTable('users', {
   gender: varchar('gender', { length: 255 }),
   date_of_birth: date('date_of_birth'),
   role: varchar('role', { length: 255 }).default('user'),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const refresh_tokens = pgTable('refresh_tokens', {
   id: serial('id').primaryKey(),
   user_id: integer('user_id').references(() => users.id),
   token: varchar('token', { length: 255 }).notNull(),
-  expires_at: timestamp('expires_at').notNull(),
-  created_at: timestamp('created_at').defaultNow().notNull(),
+  expires_at: timestamp('expires_at', { withTimezone: true }).notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const membership_plans = pgTable('membership_plans', {
@@ -40,8 +40,8 @@ export const membership_plans = pgTable('membership_plans', {
   duration_months: integer('duration_months'),
   features: text('features'),
   is_active: boolean('is_active').default(true),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const memberships = pgTable('memberships', {
@@ -51,8 +51,8 @@ export const memberships = pgTable('memberships', {
   start_date: date('start_date'),
   end_date: date('end_date'),
   status: varchar('status', { length: 255 }),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const trainers = pgTable('trainers', {
@@ -62,8 +62,8 @@ export const trainers = pgTable('trainers', {
   specialization: varchar('specialization', { length: 255 }),
   hourly_rate: decimal('hourly_rate'),
   is_active: boolean('is_active').default(true),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const gym_classes = pgTable('gym_classes', {
@@ -75,8 +75,8 @@ export const gym_classes = pgTable('gym_classes', {
   duration_minutes: integer('duration_minutes'),
   price: decimal('price'),
   is_active: boolean('is_active').default(true),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const class_schedules = pgTable('class_schedules', {
@@ -96,11 +96,11 @@ export const class_bookings = pgTable('class_bookings', {
   id: serial('id').primaryKey(),
   user_id: integer('user_id').references(() => users.id),
   class_schedule_id: integer('class_schedule_id').references(() => class_schedules.id),
-  booking_date: timestamp('booking_date'),
+  booking_date: timestamp('booking_date', { withTimezone: true }),
   status: varchar('status', { length: 255 }),
   payment_status: varchar('payment_status', { length: 255 }),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const equipment = pgTable('equipment', {
@@ -114,8 +114,8 @@ export const equipment = pgTable('equipment', {
   status: varchar('status', { length: 255 }),
   location: varchar('location', { length: 255 }),
   notes: text('notes'),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const equipment_maintenance = pgTable('equipment_maintenance', {
@@ -143,7 +143,7 @@ export const personal_training_sessions = pgTable('personal_training_sessions', 
   id: serial('id').primaryKey(),
   user_id: integer('user_id').references(() => users.id),
   trainer_id: integer('trainer_id').references(() => trainers.id),
-  session_date: timestamp('session_date'),
+  session_date: timestamp('session_date', { withTimezone: true }),
   duration_minutes: integer('duration_minutes'),
   price: decimal('price'),
   status: varchar('status', { length: 255 }),
@@ -155,9 +155,9 @@ export const personal_training_sessions = pgTable('personal_training_sessions', 
 export const gym_check_ins = pgTable('gym_check_ins', {
   id: serial('id').primaryKey(),
   user_id: integer('user_id').references(() => users.id),
-  check_in_time: timestamp('check_in_time'),
-  check_out_time: timestamp('check_out_time'),
-  created_at: timestamp('created_at').defaultNow().notNull(),
+  check_in_time: timestamp('check_in_time', { withTimezone: true }),
+  check_out_time: timestamp('check_out_time', { withTimezone: true }),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const notifications = pgTable('notifications', {
@@ -167,9 +167,9 @@ export const notifications = pgTable('notifications', {
   message: text('message'),
   type: varchar('type', { length: 255 }),
   is_read: boolean('is_read').default(false),
-  scheduled_at: timestamp('scheduled_at'),
-  sent_at: timestamp('sent_at'),
-  created_at: timestamp('created_at').defaultNow().notNull(),
+  scheduled_at: timestamp('scheduled_at', { withTimezone: true }),
+  sent_at: timestamp('sent_at', { withTimezone: true }),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const payments = pgTable('payments', {
@@ -178,13 +178,13 @@ export const payments = pgTable('payments', {
   reference_type: varchar('reference_type', { length: 255 }),
   reference_id: integer('reference_id'),
   amount: decimal('amount'),
-  payment_date: timestamp('payment_date'),
+  payment_date: timestamp('payment_date', { withTimezone: true }),
   payment_method: varchar('payment_method', { length: 255 }),
   status: varchar('status', { length: 255 }),
   transaction_id: varchar('transaction_id', { length: 255 }),
   notes: text('notes'),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const supplements = pgTable('supplements', {
@@ -208,11 +208,11 @@ export const supplements = pgTable('supplements', {
 export const supplement_orders = pgTable('supplement_orders', {
   id: serial('id').primaryKey(),
   user_id: integer('user_id').references(() => users.id),
-  order_date: timestamp('order_date'),
+  order_date: timestamp('order_date', { withTimezone: true }),
   total_amount: decimal('total_amount'),
   status: varchar('status', { length: 255 }),
-  created_at: timestamp('created_at'),
-  updated_at: timestamp('updated_at'),
+  created_at: timestamp('created_at', { withTimezone: true }),
+  updated_at: timestamp('updated_at', { withTimezone: true }),
 })
 
 export const supplement_order_items = pgTable('supplement_order_items', {
@@ -230,7 +230,7 @@ export const supplement_stock_histories = pgTable('supplement_stock_histories', 
   change_type: varchar('change_type', { length: 255 }),
   quantity_change: integer('quantity_change'),
   description: text('description'),
-  created_at: timestamp('created_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const journals = pgTable('journals', {
@@ -241,5 +241,5 @@ export const journals = pgTable('journals', {
   description: text('description'),
   amount: decimal('amount'),
   type: varchar('type', { length: 255 }),
-  created_at: timestamp('created_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
