@@ -7,6 +7,7 @@ import membershipRoute from './routes/membership.routes'
 import { authMiddleware } from './middleware/auth'
 import { logger } from 'hono/logger'
 import { logger as appLogger } from './utils/logger'
+import { config } from './config/config'
 
 const app = new Hono()
 app
@@ -31,4 +32,7 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal Server Error' }, 500)
 })
 
-export default app
+export default {
+  fetch: app.fetch,
+  port: config.server.port,
+}

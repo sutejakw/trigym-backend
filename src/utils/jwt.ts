@@ -1,16 +1,20 @@
+import { config } from '@/config/config'
 import { sign, verify } from 'hono/jwt'
 
-const JWT_SECRET = Bun.env.JWT_SECRET || 'supersecretkey'
-const JWT_EXPIRY = 60 * 15 // 15 minutes in seconds
-
-export async function generateJWT(payload: any) {
+export async function generateJWT(payload: any, expiryInSeconds?: number) {
+  const expiry = expiryInSeconds || config.jwt.expirySeconds
   const tokenPayload = {
     ...payload,
-    exp: Math.floor(Date.now() / 1000) + JWT_EXPIRY,
+    exp: Math.floor(Date.now() / 1000) + expiry,
   }
-  return await sign(tokenPayload, JWT_SECRET)
+  return await sign(tokenPayload, config.jwt.secret)
 }
 
-export function verifyJWT(token: string) {
-  return verify(token, JWT_SECRET)
+export async function verifyJWT(token: string) {
+  try {
+    const payload = await verify(token, config.jwt.secret)
+    return payload
+  } catch (error) {
+    return null
+  }
 }
