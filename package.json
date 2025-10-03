@@ -9,6 +9,7 @@
     "open-auth-docs": "open-cli http://localhost:3000/api/auth/reference",
     "db:seed:base": "bun run src/scripts/seed.ts",
     "db:seed:memberships": "bun run src/scripts/seedMemberships.ts",
+    "db:seed:trainers": "bun run src/scripts/seedTrainers.ts",
     "db:seed:all": "bun run src/scripts/seedAll.ts"
   },
   "dependencies": {

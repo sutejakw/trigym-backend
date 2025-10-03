@@ -84,7 +84,7 @@ export async function seedBase() {
   console.log('[seedBase] Done.')
 }
 
-if (import.meta.main) {
+if (require.main === module) {
   seedBase()
     .then(() => process.exit(0))
     .catch((e) => {

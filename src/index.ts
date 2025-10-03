@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import authRoute from './routes/auth.routes'
 import membershipPlanRoute from './routes/membershipPlan.routes'
 import membershipRoute from './routes/membership.routes'
+import trainerRoutes from './routes/trainer.routes'
 import { authMiddleware } from './middleware/auth'
 import { logger } from 'hono/logger'
 import { logger as appLogger } from './utils/logger'
@@ -17,6 +18,7 @@ app
   .route('api/auth', authRoute)
   .route('api/membership-plans', membershipPlanRoute)
   .route('api/memberships', membershipRoute)
+  .route('api/trainers', trainerRoutes)
   .get('/me', authMiddleware, (c) => {
     const user = c.get('jwtPayload')
     return c.json({ user })
