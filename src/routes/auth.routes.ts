@@ -134,8 +134,6 @@ app.get('/verify', async (c) => {
 
     const payload = await verifyJWT(token)
 
-    console.log(payload)
-
     if (!payload) {
       return respondError(c, 401, 'Invalid token')
     }
